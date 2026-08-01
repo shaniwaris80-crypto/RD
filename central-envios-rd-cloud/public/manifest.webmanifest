@@ -1,0 +1,18 @@
+{
+  "name": "Central Envíos RD Cloud",
+  "short_name": "Envíos RD",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f6f9",
+  "theme_color": "#0c3554",
+  "description": "Gestión sincronizada de recogidas Burgos-Madrid-República Dominicana",
+  "icons": [
+    {
+      "src": "./assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

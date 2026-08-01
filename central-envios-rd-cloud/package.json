@@ -1,0 +1,13 @@
+{
+  "name": "central-envios-rd-cloud",
+  "version": "11.0.0",
+  "private": true,
+  "description": "Central de recogidas Burgos-Madrid-Republica Dominicana con Firebase",
+  "scripts": {
+    "serve": "firebase emulators:start --only hosting,firestore",
+    "deploy": "firebase deploy --only hosting,firestore:rules,firestore:indexes"
+  },
+  "devDependencies": {
+    "firebase-tools": "latest"
+  }
+}

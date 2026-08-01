@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0c3554">
+  <meta name="description" content="Central Envíos RD Cloud">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./assets/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <title>Central Envíos RD Cloud</title>
+</head>
+<body>
+  <div id="offline-banner" class="offline-banner hidden">Sin conexión · se sincronizará al volver Internet</div>
+
+  <section id="login-screen" class="auth-screen">
+    <div class="auth-card">
+      <div class="brand-mark">🇪🇸 → 🇩🇴</div>
+      <h1>Central Envíos RD</h1>
+      <p>Recogidas en Burgos · Entrega logística en Madrid</p>
+      <form id="login-form">
+        <label for="login-email">Correo</label>
+        <input id="login-email" type="email" autocomplete="username" value="shaniwaris80@gmail.com" required>
+        <label for="login-password">Contraseña</label>
+        <input id="login-password" type="password" autocomplete="current-password" required>
+        <button class="btn primary wide" type="submit">Entrar</button>
+        <div id="login-error" class="message error hidden"></div>
+      </form>
+    </div>
+  </section>
+
+  <div id="app-shell" class="app-shell hidden">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">🇪🇸 Burgos → Madrid → República Dominicana 🇩🇴</div>
+        <h1>Central Envíos RD</h1>
+      </div>
+      <div class="topbar-actions">
+        <span id="sync-status" class="sync-badge">Conectando…</span>
+        <button id="logout-btn" class="btn ghost">Cerrar sesión</button>
+      </div>
+    </header>
+
+    <nav class="main-nav">
+      <button class="nav-btn active" data-view="dashboard">Inicio</button>
+      <button class="nav-btn" data-view="new">Nuevo albarán</button>
+      <button class="nav-btn" data-view="shipments">Recogidas</button>
+      <button class="nav-btn" data-view="madrid">Madrid</button>
+      <button class="nav-btn" data-view="contacts">Contactos</button>
+      <button class="nav-btn admin-nav hidden" data-view="admin">Administración</button>
+    </nav>
+
+    <main>
+      <section id="view-dashboard" class="view active">
+        <div class="section-heading">
+          <div><h2>Semana activa</h2><p id="week-label">Cargando…</p></div>
+          <button class="btn primary" data-go="new">+ Nuevo albarán</button>
+        </div>
+        <div class="kpi-grid">
+          <article class="kpi"><span>Albaranes</span><strong id="kpi-docs">0</strong></article>
+          <article class="kpi"><span>Total bultos</span><strong id="kpi-packages">0</strong></article>
+          <article class="kpi"><span>Pequeñas</span><strong id="kpi-small">0</strong></article>
+          <article class="kpi"><span>Medianas</span><strong id="kpi-medium">0</strong></article>
+          <article class="kpi"><span>Grandes</span><strong id="kpi-large">0</strong></article>
+        </div>
+        <div class="two-col">
+          <article class="card"><h3>Estado operativo</h3><div id="operational-summary" class="summary-list"></div></article>
+          <article class="card"><h3>Últimas recogidas</h3><div id="recent-shipments" class="summary-list"></div></article>
+        </div>
+      </section>
+
+      <section id="view-new" class="view">
+        <div class="section-heading">
+          <div><h2 id="form-title">Nuevo albarán</h2><p>Numeración semanal automática y sincronizada.</p></div>
+          <button id="reset-form-btn" class="btn ghost">Limpiar</button>
+        </div>
+        <form id="shipment-form">
+          <div class="form-layout">
+            <div>
+              <article class="card">
+                <h3>1. Envío</h3>
+                <div class="field-grid three">
+                  <div><label>Número</label><input id="shipment-number" value="Automático" readonly></div>
+                  <div><label for="shipment-date">Fecha</label><input id="shipment-date" type="date" required></div>
+                  <div><label for="shipment-status">Estado</label><select id="shipment-status"><option>Recogido</option><option>En almacén</option><option>Cargado para Madrid</option><option>Descargado en Madrid</option></select></div>
+                </div>
+                <label>Destino *</label>
+                <div class="choice-grid">
+                  <button type="button" id="destination-capital" class="choice-card">CAPITAL<small id="capital-rates">25 € · 60 € · 120 €</small></button>
+                  <button type="button" id="destination-interior" class="choice-card">INTERIOR<small id="interior-rates">30 € · 65 € · 130 €</small></button>
+                </div>
+              </article>
+
+              <article class="card">
+                <h3>2. Cajas, sin cargo y ofertas</h3>
+                <div id="box-editor"></div>
+                <div class="field-grid two">
+                  <div><label for="promotion-reason">Motivo de oferta</label><select id="promotion-reason"><option value="">Sin promoción</option><option>Cliente VIP</option><option>Fidelización</option><option>Recomendación</option><option>Incidencia</option><option>Oferta comercial</option><option>Familiar</option><option>Otro</option></select></div>
+                  <div><label for="promotion-note">Detalle</label><input id="promotion-note"></div>
+                </div>
+              </article>
+
+              <article class="card">
+                <h3>3. Remitente 🇪🇸</h3>
+                <div class="field-grid two">
+                  <div><label for="sender-phone">Teléfono *</label><div class="input-action"><input id="sender-phone" inputmode="tel" placeholder="9 dígitos" required><button id="find-sender-btn" type="button" class="btn secondary">Buscar</button></div><small id="sender-phone-help">Introduce 9 dígitos.</small></div>
+                  <div><label for="sender-name">Nombre completo *</label><input id="sender-name" required></div>
+                </div>
+                <label for="sender-address">Dirección de recogida</label><input id="sender-address">
+                <div id="sender-history-note" class="muted-note"></div>
+                <div id="beneficiaries-panel" class="beneficiaries-panel hidden"><div class="panel-title"><strong>Destinatarios anteriores</strong><button type="button" id="new-beneficiary-btn" class="btn ghost compact">+ Nuevo beneficiario</button></div><div id="beneficiaries-list"></div></div>
+              </article>
+
+              <article class="card">
+                <h3>4. Destinatario 🇩🇴</h3>
+                <div class="field-grid two">
+                  <div><label for="receiver-phone">Teléfono *</label><div class="input-action"><input id="receiver-phone" inputmode="tel" placeholder="10 dígitos o +1" required><button id="find-receiver-btn" type="button" class="btn secondary">Buscar</button></div><small id="receiver-phone-help">Introduce 10 dígitos.</small></div>
+                  <div><label for="receiver-name">Nombre completo *</label><input id="receiver-name" required></div>
+                </div>
+                <label for="receiver-address">Dirección completa *</label><textarea id="receiver-address" required></textarea>
+                <div class="field-grid two"><div><label for="receiver-area">Provincia / localidad</label><input id="receiver-area"></div><div><label for="receiver-reference">Referencia</label><input id="receiver-reference"></div></div>
+              </article>
+
+              <article class="card">
+                <h3>5. Contenido y pago</h3>
+                <div class="check-grid"><label><input type="checkbox" class="content-check" value="Alimentos"> Alimentos</label><label><input type="checkbox" class="content-check" value="Ropa"> Ropa</label><label><input type="checkbox" class="content-check" value="Zapatos"> Zapatos</label></div>
+                <label for="other-content">Otro contenido</label><input id="other-content">
+                <label for="shipment-notes">Observaciones</label><textarea id="shipment-notes"></textarea>
+                <div class="field-grid two"><div><label for="payment-method">Forma de pago</label><select id="payment-method"><option>Efectivo</option><option>Bizum</option><option>Transferencia</option><option>Pendiente</option></select></div><div><label for="payment-status">Estado del cobro</label><select id="payment-status"><option>Pagado</option><option>Pendiente</option><option>Parcial</option></select></div></div>
+              </article>
+            </div>
+
+            <aside>
+              <article class="card sticky-card">
+                <h3>Resumen para el cliente</h3>
+                <div class="customer-summary"><div><span>Destino</span><strong id="summary-destination">Sin seleccionar</strong></div><div id="summary-size-lines"></div><div><span>Cajas sin cargo</span><strong id="summary-free">0</strong></div><div><span>Total bultos</span><strong id="summary-packages">0</strong></div><div class="summary-total"><span>Total</span><strong id="summary-total">0,00 €</strong></div></div>
+                <div id="form-error" class="message error hidden"></div>
+                <label for="send-after-pdf">Después del PDF</label><select id="send-after-pdf"><option value="whatsapp">Abrir WhatsApp</option><option value="sms">Abrir SMS</option><option value="none">No enviar aviso</option></select>
+                <button type="submit" class="btn primary wide">Revisar y guardar</button>
+                <button type="button" id="print-current-btn" class="btn secondary wide">PDF + aviso</button>
+              </article>
+            </aside>
+          </div>
+        </form>
+      </section>
+
+      <section id="view-shipments" class="view">
+        <div class="section-heading"><div><h2>Recogidas de la semana</h2><p>Se actualizan en tiempo real.</p></div><div class="button-row"><button id="weekly-report-btn" class="btn secondary">PDF completo</button><button id="export-csv-btn" class="btn ghost">Exportar CSV</button></div></div>
+        <article class="card"><div class="filters"><input id="shipment-search" placeholder="Buscar número, nombre, teléfono o dirección"><select id="shipment-status-filter"><option value="">Todos los estados</option><option>Recogido</option><option>En almacén</option><option>Cargado para Madrid</option><option>Descargado en Madrid</option></select><select id="shipment-payment-filter"><option value="">Todos los cobros</option><option>Pagado</option><option>Pendiente</option><option>Parcial</option></select></div><div id="shipments-list" class="shipment-list"></div></article>
+      </section>
+
+      <section id="view-madrid" class="view">
+        <div class="section-heading"><div><h2>Entrega en Madrid</h2><p>Conteo y cierre semanal.</p></div><button id="madrid-report-btn" class="btn secondary">PDF carga / descarga</button></div>
+        <div class="kpi-grid"><article class="kpi"><span>Albaranes</span><strong id="madrid-docs">0</strong></article><article class="kpi"><span>Bultos</span><strong id="madrid-packages">0</strong></article><article class="kpi"><span>Pequeñas</span><strong id="madrid-small">0</strong></article><article class="kpi"><span>Medianas</span><strong id="madrid-medium">0</strong></article><article class="kpi"><span>Grandes</span><strong id="madrid-large">0</strong></article></div>
+        <article class="card"><div class="field-grid two"><div><label for="madrid-date">Fecha de descarga</label><input id="madrid-date" type="date"></div><div><label for="next-trip-date">Próxima salida prevista</label><input id="next-trip-date" type="date"></div></div><div class="button-row top-space"><button id="mark-loaded-btn" class="btn secondary">Marcar todo cargado</button><button id="close-week-btn" class="btn primary">Confirmar descarga y cerrar semana</button></div><div id="madrid-error" class="message error hidden"></div></article>
+        <article class="card"><h3>Relación de carga</h3><div id="madrid-list" class="summary-list"></div></article>
+        <article class="card"><h3>Histórico de semanas</h3><div id="weeks-list" class="summary-list"></div></article>
+      </section>
+
+      <section id="view-contacts" class="view">
+        <div class="two-col"><article class="card"><h2>Remitentes</h2><input id="sender-search" placeholder="Buscar remitente"><div id="senders-list" class="contact-list"></div></article><article class="card"><h2>Destinatarios</h2><input id="receiver-search" placeholder="Buscar destinatario"><div id="receivers-list" class="contact-list"></div></article></div>
+      </section>
+
+      <section id="view-admin" class="view">
+        <div class="section-heading"><div><h2>Administración</h2><p>Información interna.</p></div></div>
+        <div class="kpi-grid"><article class="kpi"><span>Facturación</span><strong id="admin-sales">0 €</strong></article><article class="kpi"><span>Coste Madrid</span><strong id="admin-cost">0 €</strong></article><article class="kpi"><span>Beneficio real</span><strong id="admin-profit">0 €</strong></article><article class="kpi"><span>Promociones</span><strong id="admin-promos">0 €</strong></article><article class="kpi"><span>Pendiente cobro</span><strong id="admin-pending">0 €</strong></article></div>
+        <div class="two-col">
+          <article class="card"><h3>Tarifas</h3><form id="settings-form"><div id="settings-rates"></div><label for="settings-next-trip">Próxima salida</label><input id="settings-next-trip" type="date"><button class="btn primary top-space" type="submit">Guardar ajustes</button></form></article>
+          <article class="card"><h3>Dar acceso a usuario existente</h3><p class="muted-note">Créalo primero en Firebase Authentication y pega su UID.</p><form id="role-form"><label for="role-uid">UID</label><input id="role-uid" required><label for="role-email">Correo</label><input id="role-email" type="email" required><label for="role-name">Nombre</label><input id="role-name" required><label for="role-value">Rol</label><select id="role-value"><option value="collector">Recogedor</option><option value="madrid">Madrid</option><option value="admin">Administrador</option></select><button class="btn secondary top-space" type="submit">Guardar acceso</button></form></article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="review-dialog"><div class="dialog-head"><h2>Revisar albarán</h2><button id="close-review-btn" class="icon-btn">×</button></div><div id="review-content"></div><div class="dialog-actions"><button id="edit-review-btn" class="btn ghost">Corregir</button><button id="confirm-save-btn" class="btn primary">Confirmar y guardar</button></div></dialog>
+  <div id="print-root"></div>
+  <div id="toast" class="toast"></div>
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
